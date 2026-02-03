@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/sin_calc_float.dir/task1.cpp.o -o sin_calc_float 

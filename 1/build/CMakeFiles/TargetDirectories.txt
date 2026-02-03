@@ -1,0 +1,4 @@
+/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/sin_calc_float.dir
+/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/sin_calc.dir
+/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/edit_cache.dir
+/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/rebuild_cache.dir
