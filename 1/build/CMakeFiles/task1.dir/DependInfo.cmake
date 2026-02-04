@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/task1.cpp" "CMakeFiles/sin_calc_float.dir/task1.cpp.o" "gcc" "CMakeFiles/sin_calc_float.dir/task1.cpp.o.d"
+  "/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/task1.cpp" "CMakeFiles/task1.dir/task1.cpp.o" "gcc" "CMakeFiles/task1.dir/task1.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

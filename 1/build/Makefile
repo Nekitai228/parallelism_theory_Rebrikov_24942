@@ -117,38 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named sin_calc_float
+# Target rules for targets named task1
 
 # Build rule for target.
-sin_calc_float: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sin_calc_float
-.PHONY : sin_calc_float
+task1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 task1
+.PHONY : task1
 
 # fast build rule for target.
-sin_calc_float/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc_float.dir/build.make CMakeFiles/sin_calc_float.dir/build
-.PHONY : sin_calc_float/fast
-
-#=============================================================================
-# Target rules for targets named sin_calc
-
-# Build rule for target.
-sin_calc: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sin_calc
-.PHONY : sin_calc
-
-# fast build rule for target.
-sin_calc/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc.dir/build.make CMakeFiles/sin_calc.dir/build
-.PHONY : sin_calc/fast
+task1/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task1.dir/build.make CMakeFiles/task1.dir/build
+.PHONY : task1/fast
 
 task1.o: task1.cpp.o
 .PHONY : task1.o
 
 # target to build an object file
 task1.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc_float.dir/build.make CMakeFiles/sin_calc_float.dir/task1.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc.dir/build.make CMakeFiles/sin_calc.dir/task1.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task1.dir/build.make CMakeFiles/task1.dir/task1.cpp.o
 .PHONY : task1.cpp.o
 
 task1.i: task1.cpp.i
@@ -156,8 +142,7 @@ task1.i: task1.cpp.i
 
 # target to preprocess a source file
 task1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc_float.dir/build.make CMakeFiles/sin_calc_float.dir/task1.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc.dir/build.make CMakeFiles/sin_calc.dir/task1.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task1.dir/build.make CMakeFiles/task1.dir/task1.cpp.i
 .PHONY : task1.cpp.i
 
 task1.s: task1.cpp.s
@@ -165,8 +150,7 @@ task1.s: task1.cpp.s
 
 # target to generate assembly for a file
 task1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc_float.dir/build.make CMakeFiles/sin_calc_float.dir/task1.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sin_calc.dir/build.make CMakeFiles/sin_calc.dir/task1.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/task1.dir/build.make CMakeFiles/task1.dir/task1.cpp.s
 .PHONY : task1.cpp.s
 
 # Help Target
@@ -177,8 +161,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... sin_calc"
-	@echo "... sin_calc_float"
+	@echo "... task1"
 	@echo "... task1.o"
 	@echo "... task1.i"
 	@echo "... task1.s"

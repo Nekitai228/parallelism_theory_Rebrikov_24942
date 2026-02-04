@@ -1,2 +1,2 @@
-# Empty dependencies file for sin_calc.
+# Empty dependencies file for task1.
 # This may be replaced when dependencies are built.

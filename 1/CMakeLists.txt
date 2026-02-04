@@ -1,20 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
-project(SinCalculator)
+project(Task1)
 
-# Опция для выбора типа данных при сборке
-option(USE_DOUBLE "Build with double precision" OFF)
+# 1. Настраиваем стандарт C++
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Создаем две версии программы
-if(USE_DOUBLE)
-    add_executable(sin_calc_double task1.cpp)
-    target_compile_options(sin_calc_double PRIVATE -O3)
-    # Будем запускать с аргументом "double"
-else()
-    add_executable(sin_calc_float task1.cpp)
-    target_compile_options(sin_calc_float PRIVATE -O3)
-    # Будем запускать с аргументом "float"
+# 2. Опция для выбора float/double (если нужно через CMake)
+option(USE_DOUBLE "Use double precision instead of float" OFF)
+
+# 3. Настраиваем конфигурационный файл (если config.h.in существует)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in")
+    configure_file(
+        config.h.in
+        ${CMAKE_BINARY_DIR}/config.h
+    )
+    include_directories(${CMAKE_BINARY_DIR})
 endif()
 
-# Или универсальная версия
-add_executable(sin_calc task1.cpp)
-target_compile_options(sin_calc PRIVATE -O3)
+
+# 4. Добавляем исполняемый файл
+add_executable(task1 task1.cpp)
+
+
+# 5. Если есть папка build - игнорируем её
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT task1)

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = 
+CXX_INCLUDES = -I/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1/build
 
-CXX_FLAGS = -O3
+CXX_FLAGS = -std=gnu++17
 
