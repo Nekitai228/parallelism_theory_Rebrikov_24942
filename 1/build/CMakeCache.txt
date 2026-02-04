@@ -225,7 +225,7 @@ Task1_IS_TOP_LEVEL:STATIC=ON
 Task1_SOURCE_DIR:STATIC=/home/iakup/GitHub/parallelism/parallelism_theory_Rebrikov_24942/1
 
 //Use double precision instead of float
-USE_DOUBLE:BOOL=ON
+USE_DOUBLE:BOOL=OFF
 
 
 ########################
