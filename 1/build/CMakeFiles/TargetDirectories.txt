@@ -1,3 +1,0 @@
-/home/n.rebrikov/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/task1.dir
-/home/n.rebrikov/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/edit_cache.dir
-/home/n.rebrikov/parallelism_theory_Rebrikov_24942/1/build/CMakeFiles/rebuild_cache.dir
