@@ -23,7 +23,7 @@ int main()
     const float step = 2.0f * PI / ARRAY_SIZE; 
     for (size_t i = 0; i < ARRAY_SIZE; ++i) 
     {
-        vec[i] = static_cast<float>(sinf(i * step));  
+        vec[i] = (std::sin(i * step));  
     }
     #endif
     
