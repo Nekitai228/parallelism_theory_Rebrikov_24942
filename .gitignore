@@ -1,0 +1,68 @@
+# Сборка CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CMakeUserPresets.json
+
+# Сгенерированные файлы CMake
+*.cmake
+
+# Исполняемые файлы и библиотеки
+*.exe
+*.out
+*.app
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Объектные файлы
+*.o
+*.obj
+*.pch
+
+# Отладка
+*.dSYM/
+*.su
+*.idb
+*.pdb
+*.ilk
+
+# Кэш компилятора
+*.gcno
+*.gcda
+
+# Профилирование
+*.gcov
+
+# Автогенерируемые файлы
+*.autogen
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Резервные копии
+*.backup
+*.bak
+
+# Логи
+*.log
+
+# Временные файлы
+tmp/
+temp/
+
+# Системные файлы
+Thumbs.db
