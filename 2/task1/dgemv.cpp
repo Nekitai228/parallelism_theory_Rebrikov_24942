@@ -68,7 +68,7 @@ void matrix_vector_product_omp(std::vector<double>& a, std::vector<double>& b, s
     }
 }
 
-void run_serial(size_t n, size_t m)
+double run_serial(size_t n, size_t m)
 {
     std::vector<double> a(m*n);
     std::vector<double> b(n);
@@ -88,12 +88,12 @@ void run_serial(size_t n, size_t m)
     matrix_vector_product(a, b, c, m, n);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsedTime = end - begin; 
-    std::cout << "Elapsed time (serial): " << std::setprecision(9) << elapsedTime.count() << " sec.\n";
+    //std::cout << "Elapsed time (serial): " << std::setprecision(9) << elapsedTime.count() << " sec.\n";
     // printf("Elapsed time (serial): %.6f sec.\n", t);
-
+    return elapsedTime.count();
 }
 
-void run_parallel(size_t n, size_t m)
+double run_parallel(size_t n, size_t m)
 {
     std::vector<double> a(m*n);
     std::vector<double> b(n);
@@ -113,19 +113,32 @@ void run_parallel(size_t n, size_t m)
     matrix_vector_product_omp(a, b, c, m, n);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsedTime = end - begin; 
-    std::cout << "Elapsed time (parallel): " << std::setprecision(9) << elapsedTime.count() << " sec.\n";
+    //std::cout << "Elapsed time (parallel): " << std::setprecision(9) << elapsedTime.count() << " sec.\n";
     // printf("Elapsed time (parallel): %.6f sec.\n", t);
+    return elapsedTime.count();
 }
 
 int main(int argc, char *argv[])
 {
+    //double tserial = 0.0;
+    double tparallel = 0.0;
+    int num_threads = omp_get_max_threads();
     size_t M = 1000;
     size_t N = 1000;
     if (argc > 1)
         M = atoi(argv[1]);
     if (argc > 2)
         N = atoi(argv[2]);
-    run_serial(M, N);
-    run_parallel(M, N);
+    if (argc > 3)
+        num_threads = std::atoi(argv[3]);
+    omp_set_num_threads(num_threads);
+    for(int i = 0; i < 50; i++)
+    {
+        //tserial += run_serial(M, N);
+        tparallel += run_parallel(M, N);
+    }
+    //std::cout << "Elapsed time (serial): " << std::setprecision(9) << (tserial/50) << " sec.\n";
+    std::cout << "Elapsed time (parallel): " << std::setprecision(9) << (tparallel/50) << " sec.\n";
+
     return 0;
 }

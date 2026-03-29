@@ -68,7 +68,7 @@ double run_serial()
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsedTime = end - begin;
     
-    std::cout << "Result (serial): " << std::fixed << std::setprecision(12) << res << " res; error " << std::setprecision(12) << fabs(res - sqrt(PI)) << std::endl;
+    //std::cout << "Result (serial): " << std::fixed << std::setprecision(12) << res << " res; error " << std::setprecision(12) << fabs(res - sqrt(PI)) << std::endl;
     // printf("Result (serial): %.12f; error %.12f\n", res, fabs(res - sqrt(PI)));
     return elapsedTime.count();
 }
@@ -79,22 +79,35 @@ double run_parallel()
     double res = integrate_omp(func, a, b, nsteps);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsedTime = end - begin;
-    std::cout << "Result (parallel): " << std::fixed << std::setprecision(12) << res << " res; error " << std::setprecision(12) << fabs(res - sqrt(PI)) << std::endl;
+    //std::cout << "Result (parallel): " << std::fixed << std::setprecision(12) << res << " res; error " << std::setprecision(12) << fabs(res - sqrt(PI)) << std::endl;
 
     //printf("Result (parallel): %.12f; error %.12f\n", res, fabs(res - sqrt(PI)));
     return elapsedTime.count();
 }
 int main(int argc, char **argv)
 {
-    std::cout << "Integration f(x) on [" << std::setprecision(12) << a << ", " << b << "], nsteps = " << nsteps << std::endl;
+    //double tserial = 0.0;
+    double tparallel = 0.0;
+    int num_threads = omp_get_max_threads();
+
+    if (argc > 1)
+    {
+        num_threads = std::atoi(argv[1]);
+    }
+    omp_set_num_threads(num_threads);
+    std::cout << "Integration f(x) on [" << std::fixed << std::setprecision(12) << a << ", " << b << "], nsteps = " << nsteps << std::endl;
     // printf("Integration f(x) on [%.12f, %.12f], nsteps = %d\n", a, b, nsteps);
-    double tserial = run_serial();
-    double tparallel = run_parallel();
+    
+    for(int i = 0; i < 50; i++)
+    {
+        //tserial += run_serial();
+        tparallel += run_parallel();
+    }
 
-    std::cout << "Execution time (serial): " << std::fixed << std::setprecision(6) << tserial << std::endl;
+    //std::cout << "Execution time (serial): " << std::fixed << std::setprecision(6) << tserial/50 << std::endl;
    
-    std::cout << "Execution time (parallel): " << std::fixed << std::setprecision(6) << tparallel << std::endl;
+    std::cout << "Execution time (parallel): " << std::fixed << std::setprecision(6) << tparallel/50 << std::endl;
 
-    std::cout << "Speedup: " << std::fixed << std::setprecision(2) << (tserial / tparallel) << std::endl;
+    //std::cout << "Speedup: " << std::fixed << std::setprecision(2) << (tserial / tparallel) << std::endl;
     return 0;
 }
