@@ -97,7 +97,8 @@ public:
     }
 
     // Остановка сервера
-    void stop() {
+    void stop() 
+    {
         if (!running.exchange(false)) 
         {
             return;

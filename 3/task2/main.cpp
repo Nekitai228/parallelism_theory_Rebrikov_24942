@@ -1,6 +1,7 @@
 
 #include "task_server.h"
 #include "tasks.h"
+// #include "validator.h"
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -101,6 +102,11 @@ void print_stats(const BenchmarkStats& stats)
     std::cout << std::string(60, '=') << "\n";
 }
 
+
+
+
+
+
 int main(int argc, char* argv[]) 
 {
     std::cout << "=== Client-Server with std::promise/std::future ===\n\n";
@@ -111,6 +117,8 @@ int main(int argc, char* argv[])
     
     BenchmarkStats stats = run_benchmark(tasks);
     print_stats(stats);
+
+    //test_results();
     
     std::cout << "\n=== Completed successfully! ===\n";
     

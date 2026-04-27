@@ -67,7 +67,7 @@ public:
                               const double& result) override 
     {
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision(4);
+        oss << std::fixed << std::setprecision(6);
         oss << "pow(" << task.first << ", " << task.second << ") = " << result;
         return oss.str();
     }

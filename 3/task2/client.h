@@ -71,7 +71,8 @@ public:
     }
 
     // Сохранение результатов в файл
-    void save_to_file(const std::vector<std::pair<TaskType, ResultType>>& results) {
+    void save_to_file(const std::vector<std::pair<TaskType, ResultType>>& results) 
+    {
         std::ofstream file(output_file);
         if (!file.is_open()) 
         {
