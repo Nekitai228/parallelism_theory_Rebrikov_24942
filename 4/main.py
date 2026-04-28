@@ -8,6 +8,8 @@ from sensor_cam import SensorCam
 from sensor_wrapper import SensorWrapper
 from sensor_x import SensorX
 from window_image import WindowImage
+import cv2
+
 
 def setup_logging():
     """Настройка логирования"""
@@ -89,6 +91,11 @@ def main():
         # Главный цикл
         while window.running:
             start_time = time.time()
+
+            # Проверка на ошибку камеры
+            if cam.is_error():
+                logging.error("Camera error detected - stopping application")
+                break
             
             # Получение данных
             cam_frame = cam.get_latest()
@@ -118,9 +125,17 @@ def main():
         
         logging.info("Application stopped")
         
+    except KeyboardInterrupt:
+        logging.info("Keyboard interrupt received - shutting down gracefully")
     except Exception as e:
-        logging.error(f"Application error: {e}")
-        raise
+        logging.error(f"Unexpected error: {e}")
+    finally:
+        # Всегда освобождаем ресурсы
+        logging.info("Cleaning up resources...")
+        cam.stop()
+        for sensor in sensors:
+            sensor.stop()
+        logging.info("All resources released")
 
 if __name__ == "__main__":
     main()
