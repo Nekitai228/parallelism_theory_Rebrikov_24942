@@ -9,19 +9,33 @@ from sensor_wrapper import SensorWrapper
 from sensor_x import SensorX
 from window_image import WindowImage
 import cv2
-
+os.environ['OPENCV_LOG_LEVEL'] = 'ERROR'  # Только ошибки OpenCV
 
 def setup_logging():
     """Настройка логирования"""
     os.makedirs('log', exist_ok=True)
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(f'log/sensor_{time.time()}.log'),
-            logging.StreamHandler()
-        ]
-    )
+    
+    # Создаем логгер
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)  # В файл пишем всё
+    
+    # Очищаем старые обработчики
+    logger.handlers.clear()
+    
+    # Файловый обработчик (пишем INFO и выше)
+    file_handler = logging.FileHandler(f'log/sensor_{time.time()}.log')
+    file_handler.setLevel(logging.INFO)
+    file_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(file_format)
+    
+    # Консольный обработчик (пишем только ERROR и выше)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.ERROR)  # Только ошибки в консоль
+    console_format = logging.Formatter('%(levelname)s - %(message)s')
+    console_handler.setFormatter(console_format)
+    
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
 
 def create_composite_image(cam_frame, sensor_data_list):
     """Создание составного изображения"""
@@ -65,6 +79,10 @@ def main():
     except:
         logging.error(f"Invalid resolution: {args.resolution}")
         return
+    
+    cam = None  #  Инициализируем заранее
+    sensors = []
+    window = None
     
     try:
         # Создание камеры
@@ -129,12 +147,18 @@ def main():
         logging.info("Keyboard interrupt received - shutting down gracefully")
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
+
     finally:
-        # Всегда освобождаем ресурсы
+        # Всегда освобождаем ресурсы (даже если cam не создан)
         logging.info("Cleaning up resources...")
-        cam.stop()
+        
+        # Добавляем проверку на None
+        if cam is not None:
+            cam.stop()
+        
         for sensor in sensors:
             sensor.stop()
+        
         logging.info("All resources released")
 
 if __name__ == "__main__":
