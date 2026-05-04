@@ -9,6 +9,14 @@ CMakeUserPresets.json
 # Сгенерированные файлы CMake
 *.cmake
 
+# PYTHON
+# Кэшированные файлы
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+
 # Исполняемые файлы и библиотеки
 *.exe
 *.out
@@ -19,10 +27,15 @@ CMakeUserPresets.json
 *.a
 *.lib
 
+#Видео-файлы
+*.mp4
+
 # Объектные файлы
 *.o
 *.obj
 *.pch
+*.pth
+*.pt
 
 # Отладка
 *.dSYM/
@@ -59,6 +72,7 @@ ui_*.h
 
 # Логи
 *.log
+*.log/
 
 # Временные файлы
 tmp/
