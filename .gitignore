@@ -1,5 +1,8 @@
 # Сборка CMake
 build/
+build_gpu/
+build_host/
+build_multicore/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
@@ -73,6 +76,7 @@ ui_*.h
 # Логи
 *.log
 *.log/
+
 
 # Временные файлы
 tmp/
