@@ -6,8 +6,8 @@ public:
     HeatSolver(int nx, int ny);
     void initialize();
     
-    // Статическое ядро принимает массив (A)
-    static double compute_kernel(int nx, int ny, double* __restrict__ A);
+    // Статическое ядро принимает два массива (A и Anew)
+    static double compute_kernel(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew);
     
     void printGrid(int rows = 10, int cols = 10) const;
 

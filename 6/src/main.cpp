@@ -38,17 +38,24 @@ int main(int argc, char* argv[]) {
     double error = 1.0;
     int iter = 0;
     double* d_A = solver.getPtrA();
+    double* d_Anew = solver.getPtrAnew();
 
+    const int CHECK_EVERY = 50; // Проверка сходимости раз в 50 шагов
 
-    const int CHECK_EVERY = 100;
     while (iter < max_iter) {
-        error = HeatSolver::compute_kernel(solver.getNx(), solver.getNy(), d_A);
+        error = HeatSolver::compute_kernel(solver.getNx(), solver.getNy(), d_A, d_Anew);
         iter++;
-        // std::swap(d_A, d_Anew);
+
+        // Обмен указателей мгновенный, данные не копируются
+        std::swap(d_A, d_Anew);
+
+        // Синхронизация и проверка только периодически
         if (iter % CHECK_EVERY == 0 && error <= tol) break;
     }
+
+    // Финальная проверка точности (если вышли по max_iter или не проверяли недавно)
     if (error > tol) {
-        error = HeatSolver::compute_kernel(solver.getNx(), solver.getNy(), d_A);
+        error = HeatSolver::compute_kernel(solver.getNx(), solver.getNy(), d_A, d_Anew);
     }
 
     auto end = std::chrono::high_resolution_clock::now();

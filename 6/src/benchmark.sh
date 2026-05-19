@@ -2,8 +2,8 @@
 set -e
 
 # По умолчанию запускаем всё
-RUN_HOST=true
-RUN_MULTICORE=true
+RUN_HOST=false
+RUN_MULTICORE=false
 RUN_GPU=true
 
 # Парсинг аргументов

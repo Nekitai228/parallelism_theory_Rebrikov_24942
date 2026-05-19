@@ -6,6 +6,7 @@
 
 HeatSolver::HeatSolver(int nx, int ny) : nx(nx), ny(ny) {
     A.resize(nx * ny, 0.0);
+    Anew.resize(nx * ny, 0.0);
 }
 
 double HeatSolver::lerp(double a, double b, double t) const {
@@ -14,6 +15,7 @@ double HeatSolver::lerp(double a, double b, double t) const {
 
 void HeatSolver::initialize() {
     std::fill(A.begin(), A.end(), 0.0);
+    std::fill(Anew.begin(), Anew.end(), 0.0);
 
     // Граничные условия
     for (int j = 0; j < ny; j++) A[idx(0, j)] = lerp(10.0, 20.0, static_cast<double>(j)/(ny-1));
@@ -21,59 +23,31 @@ void HeatSolver::initialize() {
     for (int j = 0; j < ny; j++) A[idx(nx-1, j)] = lerp(20.0, 30.0, static_cast<double>(j)/(ny-1));
     for (int i = 0; i < nx; i++) A[idx(i, 0)] = lerp(10.0, 20.0, static_cast<double>(i)/(nx-1));
 
-    // Перенос на GPU
+    std::copy(A.begin(), A.end(), Anew.begin());
+
     double* pA = A.data();
-    #pragma acc enter data copyin(pA[:nx*ny])
+    double* pAnew = Anew.data();
+    #pragma acc enter data copyin(pA[:nx*ny], pAnew[:nx*ny])
 }
 
-// === Red-Black SOR Ядро ===
-// omega (релаксация) вычисляется один раз для оптимальной сходимости
-// omega = 2 / (1 + sin(pi / N))
-double HeatSolver::compute_kernel(int nx, int ny, double* __restrict__ A) {
+// === ОПТИМИЗИРОВАННОЕ ЯДРО ЯКОБИ ===
+double HeatSolver::compute_kernel(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew) {
     double error = 0.0;
-    
-    // Оптимальный параметр релаксации для квадратной сетки
-    double omega = 2.0 / (1.0 + std::sin(M_PI / nx));
 
-    // === КРАСНЫЙ ПРОХОД ===
-    #pragma acc parallel loop present(A[:nx*ny]) reduction(max:error)
+    // parallel loop по внешнему циклу, vector по внутреннему (непрерывная память)
+    #pragma acc parallel loop present(A[:nx*ny], Anew[:nx*ny]) reduction(max:error)
     for (int i = 1; i < nx - 1; i++) {
-        int j_start = 1 + (i % 2);
-        for (int j = j_start; j < ny - 1; j += 2) {
+        #pragma acc loop vector
+        for (int j = 1; j < ny - 1; j++) {
             int idx = i * ny + j;
-            
-            // Стандартное среднее (пятиточечный шаблон)
-            double avg = 0.25 * (A[idx - ny] + A[idx + ny] + A[idx - 1] + A[idx + 1]);
-            
-            // Формула SOR: новое = старое + omega * (среднее - старое)
-            double new_val = A[idx] + omega * (avg - A[idx]);
-            
+            double new_val = 0.25 * (A[idx - ny] + A[idx + ny] + A[idx - 1] + A[idx + 1]);
+            Anew[idx] = new_val;
+
             double diff = new_val - A[idx];
             if (diff < 0.0) diff = -diff;
             if (diff > error) error = diff;
-            
-            A[idx] = new_val;
         }
     }
-
-    // === ЧЕРНЫЙ ПРОХОД ===
-    #pragma acc parallel loop present(A[:nx*ny]) reduction(max:error)
-    for (int i = 1; i < nx - 1; i++) {
-        int j_start = 2 - (i % 2);
-        for (int j = j_start; j < ny - 1; j += 2) {
-            int idx = i * ny + j;
-            
-            double avg = 0.25 * (A[idx - ny] + A[idx + ny] + A[idx - 1] + A[idx + 1]);
-            double new_val = A[idx] + omega * (avg - A[idx]);
-            
-            double diff = new_val - A[idx];
-            if (diff < 0.0) diff = -diff;
-            if (diff > error) error = diff;
-            
-            A[idx] = new_val;
-        }
-    }
-
     return error;
 }
 

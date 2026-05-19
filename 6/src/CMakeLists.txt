@@ -10,7 +10,7 @@ set(ACC_MODE "host" CACHE STRING "OpenACC target")
 set_property(CACHE ACC_MODE PROPERTY STRINGS "host" "multicore" "gpu")
 
 # Агрессивная оптимизация + вывод распараллеливания
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Minfo=all -fast -Mprefetch=distance:4 -Munroll=c:4")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Minfo=all -fast")
 
 if(ACC_MODE STREQUAL "host")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -acc=host")
