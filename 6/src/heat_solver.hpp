@@ -6,12 +6,14 @@ public:
     HeatSolver(int nx, int ny);
     void initialize();
     
-    // Статическое ядро принимает два массива (A и Anew)
-    static double compute_kernel(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew);
+    // Быстрое ядро: только вычисления, без reduction
+    static void compute_kernel_fast(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew);
+    
+    // Ядро с проверкой ошибки: с reduction
+    static double compute_kernel_with_error(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew);
     
     void printGrid(int rows = 10, int cols = 10) const;
 
-    // Геттеры для доступа к размерам и сырым указателям
     int getNx() const { return nx; }
     int getNy() const { return ny; }
     double* getPtrA() { return A.data(); }

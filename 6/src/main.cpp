@@ -18,8 +18,7 @@ int main(int argc, char* argv[]) {
             ("nx", po::value<int>(&nx)->default_value(128), "Grid size X")
             ("ny", po::value<int>(&ny)->default_value(128), "Grid size Y")
             ("max-iter", po::value<int>(&max_iter)->default_value(1000000), "Max iterations")
-            ("tol", po::value<double>(&tol)->default_value(1e-6), "Tolerance")
-        ;
+            ("tol", po::value<double>(&tol)->default_value(1e-6), "Tolerance");
         
         po::variables_map vm;
         po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -32,31 +31,48 @@ int main(int argc, char* argv[]) {
     HeatSolver solver(nx, ny);
     solver.initialize();
 
+    // Получаем сырые указатели для OpenACC
+    double* d_A = solver.getPtrA();
+    double* d_Anew = solver.getPtrAnew();
+    const int N = solver.getNx(); // для present()
+    const int totalSize = N * N;
+
     std::cout << "Optimized Jacobi: " << nx << "x" << ny << " mesh\n";
     
     auto start = std::chrono::high_resolution_clock::now();
+    
     double error = 1.0;
     int iter = 0;
-    double* d_A = solver.getPtrA();
-    double* d_Anew = solver.getPtrAnew();
+    const int CHECK_EVERY = 100; // Проверять ошибку раз в 100 итераций
 
-    const int CHECK_EVERY = 50; // Проверка сходимости раз в 50 шагов
-
-    while (iter < max_iter) {
-        error = HeatSolver::compute_kernel(solver.getNx(), solver.getNy(), d_A, d_Anew);
-        iter++;
-
-        // Обмен указателей мгновенный, данные не копируются
-        std::swap(d_A, d_Anew);
-
-        // Синхронизация и проверка только периодически
-        if (iter % CHECK_EVERY == 0 && error <= tol) break;
+    // === ЯВНАЯ ОБЛАСТЬ ДАННЫХ: копируем один раз в начале, один раз в конце ===
+    #pragma acc data copy(d_A[0:totalSize], d_Anew[0:totalSize])
+    {
+        while (iter < max_iter) {
+            // 99 из 100 итераций: быстрое ядро БЕЗ reduction
+            if (iter % CHECK_EVERY != 0) {
+                HeatSolver::compute_kernel_fast(nx, ny, d_A, d_Anew);
+            } 
+            // Каждая 100-я итерация: ядро С reduction для проверки сходимости
+            else {
+                error = HeatSolver::compute_kernel_with_error(nx, ny, d_A, d_Anew);
+                if (error <= tol) break;
+                
+                // Прогресс в stderr
+                if (iter % 1000 == 0) {
+                    std::cerr << "[GPU] Iter: " << iter << " | Error: " << error << "\n";
+                }
+            }
+            iter++;
+            std::swap(d_A, d_Anew); // Меняем указатели (безопасно внутри acc data)
+        }
+        
+        // Если вышли по max_iter без проверки — сделаем финальную проверку
+        if (iter % CHECK_EVERY != 0) {
+            error = HeatSolver::compute_kernel_with_error(nx, ny, d_A, d_Anew);
+        }
     }
-
-    // Финальная проверка точности (если вышли по max_iter или не проверяли недавно)
-    if (error > tol) {
-        error = HeatSolver::compute_kernel(solver.getNx(), solver.getNy(), d_A, d_Anew);
-    }
+    // === Конец области данных: результат автоматически скопирован на хост ===
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;

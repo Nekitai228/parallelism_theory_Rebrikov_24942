@@ -24,26 +24,30 @@ void HeatSolver::initialize() {
     for (int i = 0; i < nx; i++) A[idx(i, 0)] = lerp(10.0, 20.0, static_cast<double>(i)/(nx-1));
 
     std::copy(A.begin(), A.end(), Anew.begin());
-
-    double* pA = A.data();
-    double* pAnew = Anew.data();
-    #pragma acc enter data copyin(pA[:nx*ny], pAnew[:nx*ny])
 }
 
-// === ОПТИМИЗИРОВАННОЕ ЯДРО ЯКОБИ ===
-double HeatSolver::compute_kernel(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew) {
-    double error = 0.0;
-
-    // parallel loop по внешнему циклу, vector по внутреннему (непрерывная память)
-    #pragma acc parallel loop present(A[:nx*ny], Anew[:nx*ny]) reduction(max:error)
+// === БЫСТРОЕ ЯДРО: без reduction, без синхронизации ===
+void HeatSolver::compute_kernel_fast(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew) {
+    #pragma acc parallel loop collapse(2) present(A[:nx*ny], Anew[:nx*ny])
     for (int i = 1; i < nx - 1; i++) {
-        #pragma acc loop vector
         for (int j = 1; j < ny - 1; j++) {
-            int idx = i * ny + j;
-            double new_val = 0.25 * (A[idx - ny] + A[idx + ny] + A[idx - 1] + A[idx + 1]);
-            Anew[idx] = new_val;
+            int id = i * ny + j;
+            Anew[id] = 0.25 * (A[id - ny] + A[id + ny] + A[id - 1] + A[id + 1]);
+        }
+    }
+}
 
-            double diff = new_val - A[idx];
+// === ЯДРО С ПРОВЕРКОЙ: с reduction для вычисления ошибки ===
+double HeatSolver::compute_kernel_with_error(int nx, int ny, double* __restrict__ A, double* __restrict__ Anew) {
+    double error = 0.0;
+    #pragma acc parallel loop collapse(2) present(A[:nx*ny], Anew[:nx*ny]) reduction(max:error)
+    for (int i = 1; i < nx - 1; i++) {
+        for (int j = 1; j < ny - 1; j++) {
+            int id = i * ny + j;
+            double new_val = 0.25 * (A[id - ny] + A[id + ny] + A[id - 1] + A[id + 1]);
+            Anew[id] = new_val;
+            
+            double diff = new_val - A[id];
             if (diff < 0.0) diff = -diff;
             if (diff > error) error = diff;
         }
